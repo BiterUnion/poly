@@ -1,0 +1,15 @@
+@startuml
+'https://plantuml.com/state-diagram
+hide empty description
+
+state Instantiated: The component exists\nas a |Framework| object only.
+state Created: The component also\nexists as LuaGuiElements.
+
+[*] -> Instantiated: new
+Instantiated -> [*]: delete
+
+Instantiated --> Created: create
+Created -> Created: refresh
+Created -> Instantiated: destroy
+
+@enduml

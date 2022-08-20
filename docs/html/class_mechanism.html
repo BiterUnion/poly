@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Class Mechanism &mdash; Poly  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Module: GUI" href="GUI/module.html" />
+    <link rel="prev" title="Poly Modding Framework" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Poly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Class Mechanism</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GUI/module.html">Module: GUI</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Poly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Class Mechanism</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/class_mechanism.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="class-mechanism">
+<h1>Class Mechanism<a class="headerlink" href="#class-mechanism" title="Permalink to this headline"></a></h1>
+<p>Poly uses <a class="reference external" href="https://www.lua.org/pil/16.1.html">Lua metatables to simulate a class mechanism</a>. The following example class illustrates Poly’s Class API:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1">-- require Poly&#39;s Class API</span>
+<span class="linenos"> 2</span><span class="kd">local</span> <span class="n">Class</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.Class&#39;</span><span class="p">)</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1">-- == Define a new class called ExampleClass ======================================</span>
+<span class="linenos"> 5</span><span class="kd">local</span> <span class="n">ExampleClass</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;ExampleClass&#39;</span><span class="p">)</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="c1">-- define ExampleClass&#39;s &quot;new&quot; function (a.k.a. its constructor)</span>
+<span class="linenos"> 8</span><span class="kr">function</span> <span class="nc">ExampleClass</span><span class="p">:</span><span class="nf">new</span><span class="p">(</span><span class="n">param1</span><span class="p">,</span> <span class="n">param2</span><span class="p">)</span>
+<span class="linenos"> 9</span>    <span class="c1">-- return a new object of this class (metatable is automatically set by Poly)</span>
+<span class="linenos">10</span>    <span class="kr">return</span> <span class="p">{</span>
+<span class="linenos">11</span>        <span class="n">attr1</span> <span class="o">=</span> <span class="n">param1</span><span class="p">,</span>
+<span class="linenos">12</span>        <span class="n">attr2</span> <span class="o">=</span> <span class="n">param2</span>
+<span class="linenos">13</span>    <span class="p">}</span>
+<span class="linenos">14</span><span class="kr">end</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="c1">-- define a class method, e.g., a setter for attr1</span>
+<span class="linenos">17</span><span class="kr">function</span> <span class="nc">ExampleClass</span><span class="p">:</span><span class="nf">set_attr1</span><span class="p">(</span><span class="n">attr1</span><span class="p">)</span>
+<span class="linenos">18</span>    <span class="n">self</span><span class="p">.</span><span class="n">attr1</span> <span class="o">=</span> <span class="n">attr1</span>
+<span class="linenos">19</span><span class="kr">end</span>
+<span class="linenos">20</span>
+<span class="linenos">21</span><span class="c1">-- create a new object of ExampleClass</span>
+<span class="linenos">22</span><span class="kd">local</span> <span class="n">my_example_object</span> <span class="o">=</span> <span class="n">ExampleClass</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+<span class="linenos">23</span><span class="c1">-- call class method &#39;set_attr1&#39; with argument 5 on my_example_object</span>
+<span class="linenos">24</span><span class="n">my_example_object</span><span class="p">:</span><span class="n">set_attr1</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span>
+<span class="linenos">27</span><span class="c1">-- == Define a new class that is derived from ExampleClass ========================</span>
+<span class="linenos">28</span><span class="kd">local</span> <span class="n">DerivedClass</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;DerivedClass&#39;</span><span class="p">,</span> <span class="n">ExampleClass</span><span class="p">)</span>
+<span class="linenos">29</span>
+<span class="linenos">30</span><span class="c1">-- override &quot;new&quot; of ExampleClass</span>
+<span class="linenos">31</span><span class="kr">function</span> <span class="nc">DerivedClass</span><span class="p">:</span><span class="nf">new</span><span class="p">()</span>
+<span class="linenos">32</span>    <span class="c1">-- call super class constructor</span>
+<span class="linenos">33</span>    <span class="kr">return</span> <span class="n">ExampleClass</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">)</span>
+<span class="linenos">34</span><span class="kr">end</span>
+<span class="linenos">35</span>
+<span class="linenos">36</span><span class="c1">-- create a new object of DerivedClass</span>
+<span class="linenos">37</span><span class="kd">local</span> <span class="n">my_derived_object</span> <span class="o">=</span> <span class="n">DerivedClass</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>
+<span class="linenos">38</span><span class="c1">-- call inherited class method &#39;set_attr1&#39; with argument 10 on my_derived_object</span>
+<span class="linenos">39</span><span class="n">my_derived_object</span><span class="p">:</span><span class="n">set_attr1</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Some additional notes on the Class API:</p>
+<ul class="simple">
+<li><p>The class method <code class="docutils literal notranslate"><span class="pre">new</span></code> is a special member function. It is the classes constructor and, if defined, has to return a new instance of the class. It can optionally take arguments. You do <em>not</em> have to set instance’s metatable yourself, Poly takes care of that for you.</p></li>
+<li><p>To make the class mechanism work, all calls to member and static member functions of a class have to use the colon notation, e.g., <code class="docutils literal notranslate"><span class="pre">ExampleClass:new(1,</span> <span class="pre">'foo')</span></code> and <code class="docutils literal notranslate"><span class="pre">my_example_object:set_attr1(5)</span></code>. Definitions of class methods have to use the colon notation as well, e.g., <code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">ExampleClass:set_attr1(attr1)</span> <span class="pre">...</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Class:new</span></code> function takes an optional second argument <code class="docutils literal notranslate"><span class="pre">base_class</span></code>. This allows for class inheritance, when passing another previously defined class. The derived class provides all functions of the base class. Defining functions in the derived class overrides the corresponding function in the base class. Note that when overriding the <code class="docutils literal notranslate"><span class="pre">new</span></code> function, you are responsible for correctly initializing the base class object, e.g., by calling the base class constructor.</p></li>
+<li><p>Poly may persist class instances in Factorio’s <code class="docutils literal notranslate"><span class="pre">global</span></code> table, e.g. for event handling, so it is generally a good idea to only store compatible types in class instances, e.g. numbers, strings, LuaGuiElements, and <em>not</em> functions, for example.</p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Poly Modding Framework" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="GUI/module.html" class="btn btn-neutral float-right" title="Module: GUI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, BiterUnion.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

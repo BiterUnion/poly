@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Module: GUI &mdash; Poly  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Class Mechanism" href="../class_mechanism.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Poly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../class_mechanism.html">Class Mechanism</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Module: GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#event-handling">Event Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#components">Components</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#component-lifecycle">Component Lifecycle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#component-interface">Component Interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#factorio-components">Factorio Components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-components">Creating Components</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#window-manager">Window Manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#full-example">Full Example</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Poly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Module: GUI</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/GUI/module.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gui">
+<h1>Module: GUI<a class="headerlink" href="#module-gui" title="Permalink to this headline"></a></h1>
+<p>Poly’s GUI module has three major features that simplify <em>creating</em> and <em>managing</em> GUIs:</p>
+<ol class="arabic simple">
+<li><p>Poly’s <em>event handling</em> is an easy-to-use registry for event handler functions, that are called to handle GUI events on GUI components and <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>s.</p></li>
+<li><p>Poly’s GUI <em>components</em> are a convenient way to declaratively build GUIs. Although they are compatible with Factorio’s imperative style GUI API, they are most useful when the whole GUI is implemented using Poly.</p></li>
+<li><p>Poly’s <em>window manager</em> helps to manage multiple windows, e.g., modal dialogs.</p></li>
+</ol>
+<p>Although each part of Poly’s GUI API can be used in isolation, it is a good idea to let Poly handle all GUI related features in your mod. Feel free to contact me in case you have a scenario that Poly cannot handle fully and naturally.</p>
+<p>See <a class="reference internal" href="#full-example"><span class="std std-ref">Full Example</span></a> for an example GUI using all three features.</p>
+<p><strong>Note:</strong> Because Poly stores, e.g., class names as part of event handlers in Factorio’s <code class="docutils literal notranslate"><span class="pre">global</span></code> table, it is necessary to update these values when the mod is updated. The simplest way to do this is to (by default) delete all Poly GUIs when your mod is updated.</p>
+<section id="event-handling">
+<span id="id1"></span><h2>Event Handling<a class="headerlink" href="#event-handling" title="Permalink to this headline"></a></h2>
+<p>Poly’s event handler for GUI events is an easy way to register function calls (and optionally their arguments) with an id string. This enables Poly to associate GUI events on <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code> with handler functions, as a <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code> can only store primitive type values in its tags.</p>
+<p>The Poly <code class="docutils literal notranslate"><span class="pre">EventHandler</span></code> provides three basic functions:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">EventHandler:register(handler_table,</span> <span class="pre">function_name,</span> <span class="pre">...)</span></code></dt><dd><p>Registers a call to <code class="docutils literal notranslate"><span class="pre">handler_table:function_name(...,</span> <span class="pre">event)</span></code> and returns an id for it. <code class="docutils literal notranslate"><span class="pre">handler_table</span></code> can be either <code class="docutils literal notranslate"><span class="pre">nil</span></code> (if <code class="docutils literal notranslate"><span class="pre">function_name</span></code> is the name of a globally available function), a Poly class, or an instance of a Poly class. <code class="docutils literal notranslate"><span class="pre">function_name</span></code> is the name of the function to be called on <code class="docutils literal notranslate"><span class="pre">handler_table</span></code> as a string. All further arguments will be passed on to the handler function.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">EventHandler:call(event_handler_id,</span> <span class="pre">event)</span></code></dt><dd><p>Calls the previously registered event handler with id <code class="docutils literal notranslate"><span class="pre">event_handler_id</span></code>. It passes as arguments the registered arguments followed by the passed in <code class="docutils literal notranslate"><span class="pre">event</span></code>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">EventHandler:delete(event_handler)</span></code></dt><dd><p>Deletes a previously registered event handler. <code class="docutils literal notranslate"><span class="pre">event_handler</span></code> can be either a single event handler id, an array of ids. Alternatively, a valid <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code> can be passed, deleting all event handlers referenced in its tags.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>To associate a <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code> with an event handler, simply provide its event handler id in the elements tags in a table called <code class="docutils literal notranslate"><span class="pre">Poly</span></code> with the event’s name as its key, e.g.:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1">-- register call to globally defined function handle_button_click(5)</span>
+<span class="linenos"> 2</span><span class="kd">local</span> <span class="n">id1</span> <span class="o">=</span> <span class="n">EventHandler</span><span class="p">:</span><span class="n">register</span><span class="p">(</span><span class="kc">nil</span><span class="p">,</span> <span class="s1">&#39;handle_button_click&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="linenos"> 3</span><span class="c1">-- register call to my_object:handle_button_click(10)</span>
+<span class="linenos"> 4</span><span class="kd">local</span> <span class="n">my_object</span> <span class="o">=</span> <span class="n">MyHandlerClass</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>
+<span class="linenos"> 5</span><span class="kd">local</span> <span class="n">id2</span> <span class="o">=</span> <span class="n">EventHandler</span><span class="p">:</span><span class="n">register</span><span class="p">(</span><span class="n">my_object</span><span class="p">,</span> <span class="s1">&#39;handle_button_click&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="linenos"> 6</span><span class="c1">-- register call to MyHandlerClass:handle_button_click(15)</span>
+<span class="linenos"> 7</span><span class="kd">local</span> <span class="n">id3</span> <span class="o">=</span> <span class="n">EventHandler</span><span class="p">:</span><span class="n">register</span><span class="p">(</span><span class="n">MyHandlerClass</span><span class="p">,</span> <span class="s1">&#39;handle_button_click&#39;</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="c1">-- create a button on some previously defined frame</span>
+<span class="linenos">10</span><span class="kd">local</span> <span class="n">button</span> <span class="o">=</span> <span class="n">frame</span><span class="p">.</span><span class="n">add</span> <span class="p">{</span>
+<span class="linenos">11</span>    <span class="nb">type</span> <span class="o">=</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;test_button&#39;</span><span class="p">,</span>
+<span class="linenos">12</span>    <span class="n">tags</span> <span class="o">=</span> <span class="p">{</span>
+<span class="linenos">13</span>        <span class="c1">-- pass the registered event handlers to the LuaGuiElement by id</span>
+<span class="linenos">14</span>        <span class="c1">-- you can either pass a single id or an array containing multiple ids</span>
+<span class="linenos">15</span>        <span class="n">Poly</span> <span class="o">=</span> <span class="p">{</span> <span class="n">on_gui_click</span> <span class="o">=</span> <span class="p">{</span> <span class="n">id1</span><span class="p">,</span> <span class="n">id2</span><span class="p">,</span> <span class="n">id3</span> <span class="p">}</span> <span class="p">}</span>
+<span class="linenos">16</span>    <span class="p">}</span>
+<span class="linenos">17</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>This assumes that the various handler functions have been defined as follows:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1">-- require Poly&#39;s Class API</span>
+<span class="linenos"> 2</span><span class="kd">local</span> <span class="n">Class</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.Class&#39;</span><span class="p">)</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1">-- require Poly&#39;s EventHandler</span>
+<span class="linenos"> 5</span><span class="kd">local</span> <span class="n">EventHandler</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.EventHandler&#39;</span><span class="p">)</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="c1">-- define globally available handler function</span>
+<span class="linenos"> 8</span><span class="kr">function</span> <span class="nf">handle_button_click</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+<span class="linenos"> 9</span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;called global handle_button_click(&#39;</span> <span class="o">..</span> <span class="n">value</span> <span class="o">..</span> <span class="s1">&#39;)&#39;</span><span class="p">)</span>
+<span class="linenos">10</span><span class="kr">end</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="c1">-- define event handler class</span>
+<span class="linenos">13</span><span class="kd">local</span> <span class="n">MyHandlerClass</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;MyHandlerClass&#39;</span><span class="p">)</span>
+<span class="linenos">14</span><span class="kr">function</span> <span class="nc">MyHandlerClass</span><span class="p">:</span><span class="nf">new</span><span class="p">()</span>
+<span class="linenos">15</span>    <span class="kr">return</span> <span class="p">{}</span>
+<span class="linenos">16</span><span class="kr">end</span>
+<span class="linenos">17</span><span class="kr">function</span> <span class="nc">MyHandlerClass</span><span class="p">:</span><span class="nf">handle_button_click</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+<span class="linenos">18</span>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;called MyHandlerClass:handle_button_click(&#39;</span> <span class="o">..</span> <span class="n">value</span> <span class="o">..</span> <span class="s1">&#39;)&#39;</span><span class="p">)</span>
+<span class="linenos">19</span><span class="kr">end</span>
+</pre></div>
+</div>
+<p>Make sure to delete all event handlers of a <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code> before it is destroyed, e.g., by calling <code class="docutils literal notranslate"><span class="pre">EventHandler:delete(button)</span></code>, to prevent orphaned event handlers.</p>
+<p>Using Poly’s components makes it even easier to handle events, because components automatically create a <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>’s tags and take care of deleting event handlers before their <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>s are destroyed.</p>
+</section>
+<section id="components">
+<h2>Components<a class="headerlink" href="#components" title="Permalink to this headline"></a></h2>
+<p>Components are the basic building block for Poly GUIs. They can be simple, e.g., a label or textfield, or complex, e.g., a window containing a table and three buttons.</p>
+<section id="component-lifecycle">
+<h3>Component Lifecycle<a class="headerlink" href="#component-lifecycle" title="Permalink to this headline"></a></h3>
+<p>Key to using Poly components is to understand their lifecycle:</p>
+<img alt="Poly component's Lifecycle" src="../_images/component_lifecycle.png" />
+<ul class="simple">
+<li><p><strong>new:</strong> Creates a new instance of the component class (see <a class="reference internal" href="../class_mechanism.html"><span class="doc">Class Mechanism</span></a> for details on classes). Note that the component’s <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>s are not yet created.</p></li>
+<li><p><strong>create:</strong> Creates the <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>s visualizing the component. It is now in the <em>Created</em> state.</p></li>
+<li><p><strong>refresh:</strong> Refreshes the created <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>s with the current values from the component’s instance.</p></li>
+<li><p><strong>destroy:</strong> Destroys the component’s <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>s, moving it back to the <em>Instantiated</em> state. Again, just like after the <em>new</em> transition, the component no longer has any visible <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>s.</p></li>
+<li><p><strong>delete:</strong> Deletes the component instance.</p></li>
+</ul>
+</section>
+<section id="component-interface">
+<h3>Component Interface<a class="headerlink" href="#component-interface" title="Permalink to this headline"></a></h3>
+<p>Every Poly component (including the ones you define yourself) has to be (indirectly) derived from the <code class="docutils literal notranslate"><span class="pre">Component</span></code> class. <code class="docutils literal notranslate"><span class="pre">Component</span></code> provides default implementations for all lifecycle transitions, as well as some other functionality that is shared by all components. Custom components can override the default implementations (typically the <code class="docutils literal notranslate"><span class="pre">new</span></code> method to create a customized instance of the base component) and extend them with their own implementations. It should almost never be necessary to override something other than <code class="docutils literal notranslate"><span class="pre">new</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Component</span></code> provides the following interface:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:new(args)</span></code>:</dt><dd><p>Initializes a component instance with an optional <code class="docutils literal notranslate"><span class="pre">args.name</span></code>. All values in <code class="docutils literal notranslate"><span class="pre">args</span></code> with numeric keys will be added as children to the component.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:create(parent)</span></code>:</dt><dd><p>Creates the component’s <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>s with <code class="docutils literal notranslate"><span class="pre">parent</span></code> as their parent <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code> (i.e. they are created using <code class="docutils literal notranslate"><span class="pre">parent.add</span> <span class="pre">{</span> <span class="pre">...</span> <span class="pre">}</span></code>. The default implementation simply passes this call to all children.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:refresh()</span></code>:</dt><dd><p>Refreshes the component’s <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>s. The default implementation simply passes this call to all children.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:destroy()</span></code>:</dt><dd><p>Destroys the component’s <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>s. The default implementation simply passes this call to all children.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:delete()</span></code>:</dt><dd><p>Deletes the component instance. The default implementation simply passes this call to all children.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:get_state()</span></code>:</dt><dd><p>Returns component’s current lifecycle state (either <code class="docutils literal notranslate"><span class="pre">Component.State.Instantiated`</span> <span class="pre">or</span> <span class="pre">``Component.State.Created</span></code>).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:get_name()</span></code>:</dt><dd><p>Returns component’s <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:add_child(child)</span></code>:</dt><dd><p>Adds <code class="docutils literal notranslate"><span class="pre">child</span></code> to component’s children.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:get_child(index_or_name)</span></code>:</dt><dd><p>Returns component’s <code class="docutils literal notranslate"><span class="pre">child</span></code> with index or name <code class="docutils literal notranslate"><span class="pre">index_or_name</span></code>. Alternatively, children with a name can be directly accessed using <code class="docutils literal notranslate"><span class="pre">&lt;component_instance&gt;.&lt;child_name&gt;</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">flow.my_button</span></code> for accessing a button with name “my_button” that was added to <code class="docutils literal notranslate"><span class="pre">flow</span></code>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:get_children()</span></code>:</dt><dd><p>Returns a read-only table containing all of component’s children.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:remove_child(index_or_name)</span></code>:</dt><dd><p>Removes and returns component’s child with index or name <code class="docutils literal notranslate"><span class="pre">index_or_name</span></code>. If the child component is currently in the <code class="docutils literal notranslate"><span class="pre">Component.State.Created</span></code> state, the child will be destroyed before it is returned.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:delete_child(index_or_name)</span></code>:</dt><dd><p>Same as <code class="docutils literal notranslate"><span class="pre">Component:remove_child(index_or_name)</span></code>, but additionally also calls <code class="docutils literal notranslate"><span class="pre">delete</span></code> on the child.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Component:clear_children()</span></code>:</dt><dd><p>Deletes all of component’s children.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p><strong>Note:</strong> The <code class="docutils literal notranslate"><span class="pre">Component</span></code> class provides implementations for adding children to a component, meaning <em>all</em> Poly components have that ability. This is similar to Factorio’s <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>, where you can add children to, e.g., a label, as well. You can choose however to ignore those children in your custom component’s <code class="docutils literal notranslate"><span class="pre">create</span></code> implementation, if it does not make sense to add children to it.</p>
+</section>
+<section id="factorio-components">
+<h3>Factorio Components<a class="headerlink" href="#factorio-components" title="Permalink to this headline"></a></h3>
+<p>Poly provides pre-implemented components for all subtypes of <a class="reference external" href="https://lua-api.factorio.com/latest/LuaGuiElement.html">LuaGuiElement</a>. They are available under <code class="docutils literal notranslate"><span class="pre">__poly__.GUI.Factorio</span></code> and named after the subtype converted to camel case, e.g., component <code class="docutils literal notranslate"><span class="pre">ChooseElemButton</span></code> for subtype <code class="docutils literal notranslate"><span class="pre">choose-elem-button</span></code>.</p>
+<p>The Factorio components have a straightforward interface, which makes them usable in a similar way to the built-in ones:</p>
+<ul>
+<li><p>Their <code class="docutils literal notranslate"><span class="pre">new</span></code> method takes all arguments that are listed under <a class="reference external" href="https://lua-api.factorio.com/latest/LuaGuiElement.html#LuaGuiElement.add">LuaGuiElement.add</a> for the component’s subtype, e.g., flow’s <code class="docutils literal notranslate"><span class="pre">direction</span></code>: <code class="docutils literal notranslate"><span class="pre">Flow:new</span> <span class="pre">{</span> <span class="pre">direction</span> <span class="pre">=</span> <span class="pre">'horizontal'</span> <span class="pre">}</span></code>. Additionally, you can also pass any other of subtype’s writeable attributes that are not listed, e.g., flow’s <code class="docutils literal notranslate"><span class="pre">drag_target</span></code>.</p></li>
+<li><p>They have a getter method called <code class="docutils literal notranslate"><span class="pre">&lt;ComponentClass&gt;:get_&lt;attribute&gt;</span></code> for each attribute of the component’s subtype, as well as a setter called <code class="docutils literal notranslate"><span class="pre">&lt;ComponentClass&gt;:set_&lt;attribute&gt;</span></code> for the writeable attributes.</p></li>
+<li><p>The setter for a components <code class="docutils literal notranslate"><span class="pre">style</span></code> attribute (and also <code class="docutils literal notranslate"><span class="pre">new</span></code>) accepts style names (like <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code>s) as a string, as well as tables for modifying the styles directly, for example:</p>
+<blockquote>
+<div><div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="c1">-- sets label&#39;s style to the built-in &#39;caption_label&#39;:</span>
+<span class="n">Label</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;caption_label&#39;</span> <span class="p">}</span>
+<span class="c1">-- keeps label&#39;s current style and sets style.width = 120</span>
+<span class="n">Label</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">style</span> <span class="o">=</span> <span class="p">{</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">120</span> <span class="p">}</span> <span class="p">}</span>
+<span class="c1">-- sets label&#39;s style to the built-in &#39;caption_label&#39; and additionally sets label&#39;s style.width = 120</span>
+<span class="n">Label</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">style</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;caption_label&#39;</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">120</span> <span class="p">}</span> <span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>For Poly to be able to keep track of a component’s tags, <code class="docutils literal notranslate"><span class="pre">&lt;ComponentClass&gt;:get_tags()</span></code> returns a read-only of the tags. To modify them, use methods <code class="docutils literal notranslate"><span class="pre">&lt;ComponentClass&gt;:set_tags(tags)</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;ComponentClass&gt;:update_tags(tags)</span></code>, and <code class="docutils literal notranslate"><span class="pre">&lt;ComponentClass&gt;:delete_tags(tags)</span></code>.</p></li>
+<li><p>Most methods listed for <a class="reference external" href="https://lua-api.factorio.com/latest/LuaGuiElement.html">LuaGuiElement</a> can be called on components: <code class="docutils literal notranslate"><span class="pre">&lt;ComponentClass&gt;:&lt;method_name&gt;(...)</span></code>. Note that the component has to be in <code class="docutils literal notranslate"><span class="pre">Component.State.Created`</span> <span class="pre">state</span> <span class="pre">to</span> <span class="pre">be</span> <span class="pre">able</span> <span class="pre">to</span> <span class="pre">call</span> <span class="pre">``LuaGuiElement</span></code>’s methods.</p></li>
+<li><p>Factorio components seamlessly integrate with Poly’s event handling. Simply pass one or multiple event handler ids to a component’s <code class="docutils literal notranslate"><span class="pre">new</span></code> function with the event name as key, e.g., <code class="docutils literal notranslate"><span class="pre">Button:new</span> <span class="pre">{</span> <span class="pre">on_gui_click</span> <span class="pre">=</span> <span class="pre">EventHandler:register(...)</span> <span class="pre">}</span></code>. By default, the component takes ownership of the event handler and deletes it when the component gets deleted. You can prevent that by passing <code class="docutils literal notranslate"><span class="pre">delete_event_handler</span> <span class="pre">=</span> <span class="pre">false</span></code> to <code class="docutils literal notranslate"><span class="pre">new</span></code> as well.</p>
+<blockquote>
+<div><p>Outside of <code class="docutils literal notranslate"><span class="pre">new</span></code>, on or multiple event handlers can be added to a component via <code class="docutils literal notranslate"><span class="pre">ComponentClass:add_&lt;event_name&gt;(event_handler)</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">my_button:add_on_gui_click(EventHandler:register(...))</span></code>.</p>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="creating-components">
+<h3>Creating Components<a class="headerlink" href="#creating-components" title="Permalink to this headline"></a></h3>
+<p>Custom components are derived from <code class="docutils literal notranslate"><span class="pre">Component</span></code> or any other previously defined component, e.g., <code class="docutils literal notranslate"><span class="pre">Flow</span></code>. Typically, a custom component overrides the base components <code class="docutils literal notranslate"><span class="pre">new</span></code> function to create a customized instance of the base component, and adds getters and setters to interact with the custom component.</p>
+<p>The following simple example illustrates how to create custom components by implementing a simple <em>spinner textfield</em>. It is a numeric textfield with two buttons for decreasing and increasing the textfield’s value:</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1">-- require Poly&#39;s Class API</span>
+<span class="linenos"> 2</span><span class="kd">local</span> <span class="n">Class</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.Class&#39;</span><span class="p">)</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1">-- require Poly&#39;s pre-implemented components for flow, textfield, and button</span>
+<span class="linenos"> 5</span><span class="kd">local</span> <span class="n">Flow</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Flow&#39;</span><span class="p">)</span>
+<span class="linenos"> 6</span><span class="kd">local</span> <span class="n">Textfield</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Textfield&#39;</span><span class="p">)</span>
+<span class="linenos"> 7</span><span class="kd">local</span> <span class="n">Button</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Button&#39;</span><span class="p">)</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="c1">-- require Poly&#39;s EventHandler API</span>
+<span class="linenos">10</span><span class="kd">local</span> <span class="n">EventHandler</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.EventHandler&#39;</span><span class="p">)</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="c1">-- define a new custom component called &quot;SpinnerTextfield&quot;, derived from Flow</span>
+<span class="linenos">14</span><span class="kd">local</span> <span class="n">SpinnerTextfield</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;SpinnerTextfield&#39;</span><span class="p">,</span> <span class="n">Flow</span><span class="p">)</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="c1">-- override Flow&#39;s `new` to create a custom flow containing the SpinnerTextfield&#39;s buttons and textfield</span>
+<span class="linenos">17</span><span class="kr">function</span> <span class="nc">SpinnerTextfield</span><span class="p">:</span><span class="nf">new</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="linenos">18</span>    <span class="c1">-- create the SpinnerTextfield as a flow containing two buttons and a textfield</span>
+<span class="linenos">19</span>    <span class="kd">local</span> <span class="n">spinner_textfield</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span>
+<span class="linenos">20</span>        <span class="n">name</span> <span class="o">=</span> <span class="n">args</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+<span class="linenos">21</span>        <span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span>        <span class="c1">-- add button for decreasing the spinner value</span>
+<span class="linenos">24</span>        <span class="n">Button</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;decrease&#39;</span><span class="p">,</span> <span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">style</span> <span class="o">=</span> <span class="p">{</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">36</span> <span class="p">}</span> <span class="p">},</span>
+<span class="linenos">25</span>        <span class="c1">-- add numeric textfield with optional initial value that can be passed as</span>
+<span class="linenos">26</span>        <span class="c1">-- a parameter to SpinnerTextfield&#39;s `new` for displaying the spinner value</span>
+<span class="linenos">27</span>        <span class="n">Textfield</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;spinner_value&#39;</span><span class="p">,</span> <span class="n">numeric</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">args</span><span class="p">.</span><span class="n">initial_value</span><span class="p">,</span> <span class="n">style</span> <span class="o">=</span> <span class="p">{</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">48</span> <span class="p">}</span> <span class="p">},</span>
+<span class="linenos">28</span>        <span class="c1">-- add button for increasing the spinner value</span>
+<span class="linenos">29</span>        <span class="n">Button</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;increase&#39;</span><span class="p">,</span> <span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="n">style</span> <span class="o">=</span> <span class="p">{</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">36</span> <span class="p">}</span> <span class="p">}</span>
+<span class="linenos">30</span>    <span class="p">}</span>
+<span class="linenos">31</span>    <span class="c1">-- setup event handling</span>
+<span class="linenos">32</span>    <span class="n">spinner_textfield</span><span class="p">.</span><span class="n">decrease</span><span class="p">:</span><span class="n">add_on_gui_click</span><span class="p">(</span><span class="n">EventHandler</span><span class="p">:</span><span class="n">register</span><span class="p">(</span><span class="n">spinner_textfield</span><span class="p">,</span> <span class="s1">&#39;on_gui_click_inc_dec&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="linenos">33</span>    <span class="n">spinner_textfield</span><span class="p">.</span><span class="n">increase</span><span class="p">:</span><span class="n">add_on_gui_click</span><span class="p">(</span><span class="n">EventHandler</span><span class="p">:</span><span class="n">register</span><span class="p">(</span><span class="n">spinner_textfield</span><span class="p">,</span> <span class="s1">&#39;on_gui_click_inc_dec&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span>    <span class="kr">return</span> <span class="n">spinner_textfield</span>
+<span class="linenos">36</span><span class="kr">end</span>
+<span class="linenos">37</span>
+<span class="linenos">38</span><span class="c1">-- add event handler function for updating the SpinnerTextfield&#39;s value</span>
+<span class="linenos">39</span><span class="kr">function</span> <span class="nc">SpinnerTextfield</span><span class="p">:</span><span class="nf">on_gui_click_inc_dec</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+<span class="linenos">40</span>    <span class="kr">if</span> <span class="n">event</span><span class="p">.</span><span class="n">shift</span> <span class="kr">then</span>
+<span class="linenos">41</span>        <span class="c1">-- multiply delta by 10, if the shift key was pressed during click</span>
+<span class="linenos">42</span>        <span class="n">delta</span> <span class="o">=</span> <span class="n">delta</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="linenos">43</span>    <span class="kr">end</span>
+<span class="linenos">44</span>    <span class="c1">-- get current value and modify by delta</span>
+<span class="linenos">45</span>    <span class="kd">local</span> <span class="n">value</span> <span class="o">=</span> <span class="nb">tonumber</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">spinner_value</span><span class="p">:</span><span class="n">get_text</span><span class="p">())</span> <span class="ow">or</span> <span class="mi">0</span>
+<span class="linenos">46</span>    <span class="n">self</span><span class="p">.</span><span class="n">spinner_value</span><span class="p">:</span><span class="n">set_text</span><span class="p">(</span><span class="nb">tostring</span><span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="n">delta</span><span class="p">))</span>
+<span class="linenos">47</span><span class="kr">end</span>
+<span class="linenos">48</span>
+<span class="linenos">49</span>
+<span class="linenos">50</span><span class="c1">-- make SpinnerTextfield usable as Lua module</span>
+<span class="linenos">51</span><span class="kr">return</span> <span class="n">SpinnerTextfield</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="window-manager">
+<span id="id3"></span><h2>Window Manager<a class="headerlink" href="#window-manager" title="Permalink to this headline"></a></h2>
+<p>The window manager keeps track of the windows opened by your mod. It establishes a hierarchy (more precisely a stack) of windows per GUI available under <code class="docutils literal notranslate"><span class="pre">player.gui</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">screen</span></code>, which allows easily implementing modal dialogs, for example.</p>
+<p><code class="docutils literal notranslate"><span class="pre">WindowManager</span></code> provides the following interface:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">WindowManager:open(anchor,</span> <span class="pre">window_or_class,</span> <span class="pre">...)</span></code></p>
+<blockquote>
+<div><p>Creates the <code class="docutils literal notranslate"><span class="pre">window_or_class</span></code> if it is an instance of Poly’s <code class="docutils literal notranslate"><span class="pre">Window</span></code> or any derived class. Instantiates and then creates it, if <code class="docutils literal notranslate"><span class="pre">window_or_class</span></code> is Poly’s <code class="docutils literal notranslate"><span class="pre">Window</span></code> or any derived class itself. All further arguments are passed to the classes <code class="docutils literal notranslate"><span class="pre">new</span></code> function.
+Anchor is one of the values of enum <code class="docutils literal notranslate"><span class="pre">WindowManager.Anchor</span></code>, e.g., <code class="docutils literal notranslate"><span class="pre">WindowManager.Anchor.screen(player)</span></code> for creating windows in <code class="docutils literal notranslate"><span class="pre">player.gui.screen</span></code>. All windows below the new window in the stack will have their <code class="docutils literal notranslate"><span class="pre">ignored_by_interaction</span></code> attribute set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, allowing input only to the topmost window.</p>
+</div></blockquote>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">WindowManager:close(window_or_anchor,</span> <span class="pre">delete,</span> <span class="pre">delete_in_front)</span></code></p>
+<blockquote>
+<div><p>Destroys <code class="docutils literal notranslate"><span class="pre">window_or_anchor</span></code>. If <code class="docutils literal notranslate"><span class="pre">window_or_anchor</span></code> is a window, it and all windows on top of it in the stack will be destroyed.
+If <code class="docutils literal notranslate"><span class="pre">window_or_anchor</span></code> is an anchor, all windows in the anchor’s stack will be destroyed. When the optional parameter <code class="docutils literal notranslate"><span class="pre">delete</span></code> is omitted or set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the window will also be deleted (i.e. its <code class="docutils literal notranslate"><span class="pre">delete</span></code> function will be called). When the optional parameter <code class="docutils literal notranslate"><span class="pre">delete_in_front</span></code> is omitted or set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, the windows on top of <code class="docutils literal notranslate"><span class="pre">window_or_anchor</span></code> will also be deleted.</p>
+</div></blockquote>
+</li>
+</ul>
+<p>The following listing illustrates the usage of <code class="docutils literal notranslate"><span class="pre">WindowManager</span></code> and <code class="docutils literal notranslate"><span class="pre">Window</span></code>. It creates a simple test window every time the command <code class="docutils literal notranslate"><span class="pre">/open_window</span></code> is executed in Factorio’s console. When multiple windows are opened, only the top one can be moved around and closed. Executing command <code class="docutils literal notranslate"><span class="pre">/close_all_windows</span></code> closes all previously opened windows.</p>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1">-- require Poly&#39;s Class API</span>
+<span class="linenos"> 2</span><span class="kd">local</span> <span class="n">Class</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.Class&#39;</span><span class="p">)</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1">-- require Poly&#39;s WindowManager &amp; Window</span>
+<span class="linenos"> 5</span><span class="kd">local</span> <span class="n">WindowManager</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.WindowManager&#39;</span><span class="p">)</span>
+<span class="linenos"> 6</span><span class="kd">local</span> <span class="n">Window</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Window&#39;</span><span class="p">)</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="c1">-- require Poly&#39;s pre-implemented component for label</span>
+<span class="linenos"> 9</span><span class="kd">local</span> <span class="n">Label</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Label&#39;</span><span class="p">)</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="c1">-- add command that opens a new window in player.gui.screen</span>
+<span class="linenos">12</span><span class="n">commands</span><span class="p">.</span><span class="n">add_command</span><span class="p">(</span><span class="s1">&#39;open_window&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+<span class="linenos">13</span>    <span class="kd">local</span> <span class="n">player</span> <span class="o">=</span> <span class="n">game</span><span class="p">.</span><span class="n">players</span><span class="p">[</span><span class="n">command</span><span class="p">.</span><span class="n">player_index</span><span class="p">]</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span>    <span class="c1">-- initialize a new window</span>
+<span class="linenos">16</span>    <span class="kd">local</span> <span class="n">window</span> <span class="o">=</span> <span class="n">Window</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span>
+<span class="linenos">17</span>        <span class="c1">-- configure window&#39;s titlebar</span>
+<span class="linenos">18</span>        <span class="n">titlebar</span> <span class="o">=</span> <span class="p">{</span>
+<span class="linenos">19</span>            <span class="c1">-- set window&#39;s title (append number of currently open windows)</span>
+<span class="linenos">20</span>            <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Test window &#39;</span> <span class="o">..</span> <span class="nb">tostring</span><span class="p">(</span><span class="o">#</span><span class="n">player</span><span class="p">.</span><span class="n">gui</span><span class="p">.</span><span class="n">screen</span><span class="p">.</span><span class="n">children</span><span class="p">)</span>
+<span class="linenos">21</span>        <span class="p">},</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span>        <span class="c1">-- add components to the window (3 labels for this example)</span>
+<span class="linenos">24</span>        <span class="n">Label</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;This window can be dragged&#39;</span> <span class="p">},</span>
+<span class="linenos">25</span>        <span class="n">Label</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;by clicking and dragging&#39;</span> <span class="p">},</span>
+<span class="linenos">26</span>        <span class="n">Label</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;its titlebar or title&#39;</span> <span class="p">}</span>
+<span class="linenos">27</span>    <span class="p">}</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span>    <span class="c1">-- open window in player.gui.screen</span>
+<span class="linenos">30</span>    <span class="n">WindowManager</span><span class="p">:</span><span class="n">open</span><span class="p">(</span><span class="n">WindowManager</span><span class="p">.</span><span class="n">Anchor</span><span class="p">.</span><span class="n">screen</span><span class="p">(</span><span class="n">player</span><span class="p">),</span> <span class="n">window</span><span class="p">)</span>
+<span class="linenos">31</span><span class="kr">end</span><span class="p">)</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="c1">-- add command that closes all windows in player.gui.screen</span>
+<span class="linenos">34</span><span class="n">commands</span><span class="p">.</span><span class="n">add_command</span><span class="p">(</span><span class="s1">&#39;close_all_windows&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+<span class="linenos">35</span>    <span class="kd">local</span> <span class="n">player</span> <span class="o">=</span> <span class="n">game</span><span class="p">.</span><span class="n">players</span><span class="p">[</span><span class="n">command</span><span class="p">.</span><span class="n">player_index</span><span class="p">]</span>
+<span class="linenos">36</span>
+<span class="linenos">37</span>    <span class="c1">-- close all windows in player.gui.screen</span>
+<span class="linenos">38</span>    <span class="n">WindowManager</span><span class="p">:</span><span class="n">close</span><span class="p">(</span><span class="n">WindowManager</span><span class="p">.</span><span class="n">Anchor</span><span class="p">.</span><span class="n">screen</span><span class="p">(</span><span class="n">player</span><span class="p">))</span>
+<span class="linenos">39</span><span class="kr">end</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="full-example">
+<span id="id4"></span><h2>Full Example<a class="headerlink" href="#full-example" title="Permalink to this headline"></a></h2>
+<p>This section provides a full example using all three major features of Poly’s GUI module: custom components, event handling, and managing multiple windows. The example will implement a simple, manual counter GUI, where the player can enter a caption and update a number. For this, we implement a custom SpinnerLabel component that is a numeric label with two buttons for increasing and decreasing its value. We will use the window manager to display the counter GUI and show a modal dialog for entering the counter’s caption.</p>
+<p>Each listing in this section has a filename shown as its caption at the top. You can test this example by copying the listings into files with these names.</p>
+<p>Let’s start with the SpinnerLabel:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">SpinnerLabel.lua</span><a class="headerlink" href="#id5" title="Permalink to this code"></a></div>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1">-- require Poly&#39;s Class API</span>
+<span class="linenos"> 2</span><span class="kd">local</span> <span class="n">Class</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.Class&#39;</span><span class="p">)</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1">-- require Poly&#39;s pre-implemented components for flow, label, and button</span>
+<span class="linenos"> 5</span><span class="kd">local</span> <span class="n">Flow</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Flow&#39;</span><span class="p">)</span>
+<span class="linenos"> 6</span><span class="kd">local</span> <span class="n">Label</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Label&#39;</span><span class="p">)</span>
+<span class="linenos"> 7</span><span class="kd">local</span> <span class="n">Button</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Button&#39;</span><span class="p">)</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="c1">-- require Poly&#39;s EventHandler API</span>
+<span class="linenos">10</span><span class="kd">local</span> <span class="n">EventHandler</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.EventHandler&#39;</span><span class="p">)</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="c1">-- define a new custom component called &quot;SpinnerLabel&quot;, derived from Flow</span>
+<span class="linenos">14</span><span class="kd">local</span> <span class="n">SpinnerLabel</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;SpinnerLabel&#39;</span><span class="p">,</span> <span class="n">Flow</span><span class="p">)</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="c1">-- override Flow&#39;s `new` to create a custom flow containing the SpinnerLabel&#39;s buttons and label</span>
+<span class="linenos">17</span><span class="kr">function</span> <span class="nc">SpinnerLabel</span><span class="p">:</span><span class="nf">new</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+<span class="linenos">18</span>    <span class="c1">-- create the SpinnerLabel as a flow containing two buttons and a label</span>
+<span class="linenos">19</span>    <span class="kd">local</span> <span class="n">spinner_label</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span>
+<span class="linenos">20</span>        <span class="n">name</span> <span class="o">=</span> <span class="n">args</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+<span class="linenos">21</span>        <span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span>        <span class="c1">-- add button for decreasing the spinner value</span>
+<span class="linenos">24</span>        <span class="n">Button</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;decrease&#39;</span><span class="p">,</span> <span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">style</span> <span class="o">=</span> <span class="p">{</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">36</span> <span class="p">}</span> <span class="p">},</span>
+<span class="linenos">25</span>        <span class="c1">-- add a label with optional initial value that can be passed as</span>
+<span class="linenos">26</span>        <span class="c1">-- a parameter to SpinnerLabel&#39;s `new` for displaying the spinner value</span>
+<span class="linenos">27</span>        <span class="n">Label</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;spinner_value&#39;</span><span class="p">,</span> <span class="n">numeric</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="n">caption</span> <span class="o">=</span> <span class="n">args</span><span class="p">.</span><span class="n">initial_value</span><span class="p">,</span>
+<span class="linenos">28</span>                    <span class="n">style</span> <span class="o">=</span> <span class="p">{</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">48</span><span class="p">,</span> <span class="n">horizontal_align</span> <span class="o">=</span> <span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">vertical_align</span> <span class="o">=</span> <span class="s1">&#39;center&#39;</span> <span class="p">}</span> <span class="p">},</span>
+<span class="linenos">29</span>        <span class="c1">-- add button for increasing the spinner value</span>
+<span class="linenos">30</span>        <span class="n">Button</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;increase&#39;</span><span class="p">,</span> <span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="n">style</span> <span class="o">=</span> <span class="p">{</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">36</span> <span class="p">}</span> <span class="p">}</span>
+<span class="linenos">31</span>    <span class="p">}</span>
+<span class="linenos">32</span>    <span class="c1">-- setup event handling</span>
+<span class="linenos">33</span>    <span class="n">spinner_label</span><span class="p">.</span><span class="n">decrease</span><span class="p">:</span><span class="n">add_on_gui_click</span><span class="p">(</span><span class="n">EventHandler</span><span class="p">:</span><span class="n">register</span><span class="p">(</span><span class="n">spinner_label</span><span class="p">,</span> <span class="s1">&#39;on_gui_click_inc_dec&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+<span class="linenos">34</span>    <span class="n">spinner_label</span><span class="p">.</span><span class="n">increase</span><span class="p">:</span><span class="n">add_on_gui_click</span><span class="p">(</span><span class="n">EventHandler</span><span class="p">:</span><span class="n">register</span><span class="p">(</span><span class="n">spinner_label</span><span class="p">,</span> <span class="s1">&#39;on_gui_click_inc_dec&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="linenos">35</span>
+<span class="linenos">36</span>    <span class="kr">return</span> <span class="n">spinner_label</span>
+<span class="linenos">37</span><span class="kr">end</span>
+<span class="linenos">38</span>
+<span class="linenos">39</span><span class="c1">-- add event handler function for updating the SpinnerLabel&#39;s value</span>
+<span class="linenos">40</span><span class="kr">function</span> <span class="nc">SpinnerLabel</span><span class="p">:</span><span class="nf">on_gui_click_inc_dec</span><span class="p">(</span><span class="n">delta</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+<span class="linenos">41</span>    <span class="kr">if</span> <span class="n">event</span><span class="p">.</span><span class="n">shift</span> <span class="kr">then</span>
+<span class="linenos">42</span>        <span class="c1">-- multiply delta by 10, if the shift key was pressed during click</span>
+<span class="linenos">43</span>        <span class="n">delta</span> <span class="o">=</span> <span class="n">delta</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="linenos">44</span>    <span class="kr">end</span>
+<span class="linenos">45</span>    <span class="c1">-- get current value and modify by delta</span>
+<span class="linenos">46</span>    <span class="kd">local</span> <span class="n">value</span> <span class="o">=</span> <span class="nb">tonumber</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">spinner_value</span><span class="p">:</span><span class="n">get_caption</span><span class="p">())</span> <span class="ow">or</span> <span class="mi">0</span>
+<span class="linenos">47</span>    <span class="n">self</span><span class="p">.</span><span class="n">spinner_value</span><span class="p">:</span><span class="n">set_caption</span><span class="p">(</span><span class="nb">tostring</span><span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="n">delta</span><span class="p">))</span>
+<span class="linenos">48</span><span class="kr">end</span>
+<span class="linenos">49</span>
+<span class="linenos">50</span>
+<span class="linenos">51</span><span class="c1">-- make SpinnerLabel usable as Lua module</span>
+<span class="linenos">52</span><span class="kr">return</span> <span class="n">SpinnerLabel</span>
+</pre></div>
+</div>
+</div>
+<p>Additionally, we create a custom dialog to enter a caption for the counter:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">CaptionDialog.lua</span><a class="headerlink" href="#id6" title="Permalink to this code"></a></div>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1">-- require Poly&#39;s Class API</span>
+<span class="linenos"> 2</span><span class="kd">local</span> <span class="n">Class</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.Class&#39;</span><span class="p">)</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1">-- require Poly&#39;s pre-implemented components for frame, flow, empty-widget, label, textfield, and button</span>
+<span class="linenos"> 5</span><span class="kd">local</span> <span class="n">Frame</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Frame&#39;</span><span class="p">)</span>
+<span class="linenos"> 6</span><span class="kd">local</span> <span class="n">Flow</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Flow&#39;</span><span class="p">)</span>
+<span class="linenos"> 7</span><span class="kd">local</span> <span class="n">EmptyWidget</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.EmptyWidget&#39;</span><span class="p">)</span>
+<span class="linenos"> 8</span><span class="kd">local</span> <span class="n">Label</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Label&#39;</span><span class="p">)</span>
+<span class="linenos"> 9</span><span class="kd">local</span> <span class="n">Textfield</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Textfield&#39;</span><span class="p">)</span>
+<span class="linenos">10</span><span class="kd">local</span> <span class="n">Button</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Button&#39;</span><span class="p">)</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="c1">-- require Poly&#39;s WindowManager &amp; Window component</span>
+<span class="linenos">13</span><span class="kd">local</span> <span class="n">WindowManager</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.WindowManager&#39;</span><span class="p">)</span>
+<span class="linenos">14</span><span class="kd">local</span> <span class="n">Window</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Window&#39;</span><span class="p">)</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="c1">-- require Poly&#39;s EventHandler API</span>
+<span class="linenos">17</span><span class="kd">local</span> <span class="n">EventHandler</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.EventHandler&#39;</span><span class="p">)</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="c1">-- define a new custom component called &quot;CaptionDialog&quot;, derived from Window</span>
+<span class="linenos">21</span><span class="kd">local</span> <span class="n">CaptionDialog</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;CaptionDialog&#39;</span><span class="p">,</span> <span class="n">Window</span><span class="p">)</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span><span class="c1">-- override Window&#39;s `new` to create a custom window</span>
+<span class="linenos">24</span><span class="kr">function</span> <span class="nc">CaptionDialog</span><span class="p">:</span><span class="nf">new</span><span class="p">()</span>
+<span class="linenos">25</span>    <span class="kd">local</span> <span class="n">caption_dialog</span> <span class="o">=</span> <span class="n">Window</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span>
+<span class="linenos">26</span>        <span class="c1">-- configure dialog&#39;s titlebar (don&#39;t add a close button, as Factorio dialogs have a back button on the bottom)</span>
+<span class="linenos">27</span>        <span class="n">titlebar</span> <span class="o">=</span> <span class="p">{</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Enter counter</span><span class="se">\&#39;</span><span class="s1">s caption&#39;</span><span class="p">,</span> <span class="n">add_close_button</span> <span class="o">=</span> <span class="kc">false</span> <span class="p">},</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span>        <span class="c1">-- add a frame for dialog&#39;s content (a label and textfield)</span>
+<span class="linenos">30</span>        <span class="n">Frame</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span>
+<span class="linenos">31</span>            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;content&#39;</span><span class="p">,</span>
+<span class="linenos">32</span>            <span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
+<span class="linenos">33</span>            <span class="n">style</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;inside_shallow_frame_with_padding&#39;</span> <span class="p">},</span>
+<span class="linenos">34</span>
+<span class="linenos">35</span>            <span class="n">Flow</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span>
+<span class="linenos">36</span>                <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;input&#39;</span><span class="p">,</span>
+<span class="linenos">37</span>                <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;player_input_horizontal_flow&#39;</span><span class="p">,</span>
+<span class="linenos">38</span>
+<span class="linenos">39</span>                <span class="n">Label</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;Counter caption:&#39;</span> <span class="p">},</span>
+<span class="linenos">40</span>                <span class="n">Textfield</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;counter_caption&#39;</span> <span class="p">}</span>
+<span class="linenos">41</span>            <span class="p">}</span>
+<span class="linenos">42</span>        <span class="p">},</span>
+<span class="linenos">43</span>        <span class="c1">-- add a flow for dialog&#39;s buttons (Back and Confirm)</span>
+<span class="linenos">44</span>        <span class="n">Flow</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span>
+<span class="linenos">45</span>            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;buttons&#39;</span><span class="p">,</span>
+<span class="linenos">46</span>            <span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
+<span class="linenos">47</span>
+<span class="linenos">48</span>            <span class="n">Button</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;back&#39;</span><span class="p">,</span> <span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;Back&#39;</span><span class="p">,</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;back_button&#39;</span> <span class="p">},</span>
+<span class="linenos">49</span>            <span class="n">EmptyWidget</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">style</span> <span class="o">=</span> <span class="p">{</span> <span class="n">horizontally_stretchable</span> <span class="o">=</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">},</span>
+<span class="linenos">50</span>            <span class="n">Button</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;confirm&#39;</span><span class="p">,</span> <span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;Confirm&#39;</span><span class="p">,</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;confirm_button&#39;</span> <span class="p">}</span>
+<span class="linenos">51</span>        <span class="p">}</span>
+<span class="linenos">52</span>    <span class="p">}</span>
+<span class="linenos">53</span>    <span class="c1">-- setup event handling</span>
+<span class="linenos">54</span>    <span class="n">caption_dialog</span><span class="p">.</span><span class="n">buttons</span><span class="p">.</span><span class="n">back</span><span class="p">:</span><span class="n">add_on_gui_click</span><span class="p">(</span><span class="n">EventHandler</span><span class="p">:</span><span class="n">register</span><span class="p">(</span><span class="n">caption_dialog</span><span class="p">,</span> <span class="s1">&#39;on_gui_click_back&#39;</span><span class="p">))</span>
+<span class="linenos">55</span>    <span class="n">caption_dialog</span><span class="p">.</span><span class="n">buttons</span><span class="p">.</span><span class="n">confirm</span><span class="p">:</span><span class="n">add_on_gui_click</span><span class="p">(</span><span class="n">EventHandler</span><span class="p">:</span><span class="n">register</span><span class="p">(</span><span class="n">caption_dialog</span><span class="p">,</span> <span class="s1">&#39;on_gui_click_confirm&#39;</span><span class="p">))</span>
+<span class="linenos">56</span>
+<span class="linenos">57</span>    <span class="kr">return</span> <span class="n">caption_dialog</span>
+<span class="linenos">58</span><span class="kr">end</span>
+<span class="linenos">59</span>
+<span class="linenos">60</span><span class="c1">-- add event handler functions for clicking on buttons</span>
+<span class="linenos">61</span><span class="kr">function</span> <span class="nc">CaptionDialog</span><span class="p">:</span><span class="nf">on_gui_click_back</span><span class="p">()</span>
+<span class="linenos">62</span>    <span class="c1">-- close this dialog</span>
+<span class="linenos">63</span>    <span class="n">WindowManager</span><span class="p">:</span><span class="n">close</span><span class="p">(</span><span class="n">self</span><span class="p">)</span>
+<span class="linenos">64</span><span class="kr">end</span>
+<span class="linenos">65</span><span class="kr">function</span> <span class="nc">CaptionDialog</span><span class="p">:</span><span class="nf">on_gui_click_confirm</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<span class="linenos">66</span>    <span class="c1">-- apply the new caption to the counter GUI&#39;s label</span>
+<span class="linenos">67</span>    <span class="n">global</span><span class="p">.</span><span class="n">counter_guis</span><span class="p">[</span><span class="n">event</span><span class="p">.</span><span class="n">player_index</span><span class="p">].</span><span class="n">content</span><span class="p">.</span><span class="n">counter</span><span class="p">.</span><span class="n">counter_caption</span><span class="p">:</span><span class="n">set_caption</span><span class="p">(</span>
+<span class="linenos">68</span>            <span class="n">self</span><span class="p">.</span><span class="n">content</span><span class="p">.</span><span class="n">input</span><span class="p">.</span><span class="n">counter_caption</span><span class="p">:</span><span class="n">get_text</span><span class="p">())</span>
+<span class="linenos">69</span>    <span class="c1">-- close this dialog</span>
+<span class="linenos">70</span>    <span class="n">WindowManager</span><span class="p">:</span><span class="n">close</span><span class="p">(</span><span class="n">self</span><span class="p">)</span>
+<span class="linenos">71</span><span class="kr">end</span>
+<span class="linenos">72</span>
+<span class="linenos">73</span><span class="c1">-- make CaptionDialog usable as Lua module</span>
+<span class="linenos">74</span><span class="kr">return</span> <span class="n">CaptionDialog</span>
+</pre></div>
+</div>
+</div>
+<p>We can now create the counter GUI using these components in <code class="docutils literal notranslate"><span class="pre">control.lua</span></code>:</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">control.lua</span><a class="headerlink" href="#id7" title="Permalink to this code"></a></div>
+<div class="highlight-lua notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1">-- require Factorio&#39;s mod GUI for adding a mod button</span>
+<span class="linenos"> 2</span><span class="kd">local</span> <span class="n">mod_gui</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;mod-gui&#39;</span><span class="p">)</span>
+<span class="linenos"> 3</span>
+<span class="linenos"> 4</span><span class="c1">-- require Poly&#39;s WindowManager &amp; Window component</span>
+<span class="linenos"> 5</span><span class="kd">local</span> <span class="n">WindowManager</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.WindowManager&#39;</span><span class="p">)</span>
+<span class="linenos"> 6</span><span class="kd">local</span> <span class="n">Window</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Window&#39;</span><span class="p">)</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="c1">-- require Poly&#39;s Component API</span>
+<span class="linenos"> 9</span><span class="kd">local</span> <span class="n">Component</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Component&#39;</span><span class="p">)</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="c1">-- require Poly&#39;s pre-implemented components for frame, flow, button, sprite-button, empty-widget and label</span>
+<span class="linenos">12</span><span class="kd">local</span> <span class="n">Frame</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Frame&#39;</span><span class="p">)</span>
+<span class="linenos">13</span><span class="kd">local</span> <span class="n">Flow</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Flow&#39;</span><span class="p">)</span>
+<span class="linenos">14</span><span class="kd">local</span> <span class="n">Button</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Button&#39;</span><span class="p">)</span>
+<span class="linenos">15</span><span class="kd">local</span> <span class="n">SpriteButton</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.SpriteButton&#39;</span><span class="p">)</span>
+<span class="linenos">16</span><span class="kd">local</span> <span class="n">EmptyWidget</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.EmptyWidget&#39;</span><span class="p">)</span>
+<span class="linenos">17</span><span class="kd">local</span> <span class="n">Label</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.Factorio.Label&#39;</span><span class="p">)</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="c1">-- require Poly&#39;s EventHandler API</span>
+<span class="linenos">20</span><span class="kd">local</span> <span class="n">EventHandler</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.GUI.EventHandler&#39;</span><span class="p">)</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span><span class="c1">-- require custom SpinnerLabel component</span>
+<span class="linenos">23</span><span class="kd">local</span> <span class="n">SpinnerLabel</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;SpinnerLabel&#39;</span><span class="p">)</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="c1">-- require custom CaptionDialog</span>
+<span class="linenos">26</span><span class="kd">local</span> <span class="n">CaptionDialog</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;CaptionDialog&#39;</span><span class="p">)</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span><span class="c1">-- function for initializing a mod button and counter GUI for the given player</span>
+<span class="linenos">30</span><span class="c1">-- this will be called when the mod is initialized or a new player joins</span>
+<span class="linenos">31</span><span class="kd">local</span> <span class="kr">function</span> <span class="nf">create_counter_gui</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
+<span class="linenos">32</span>    <span class="c1">-- initialize player&#39;s counter GUI and store it in global</span>
+<span class="linenos">33</span>    <span class="n">global</span><span class="p">.</span><span class="n">counter_guis</span><span class="p">[</span><span class="n">player</span><span class="p">.</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">Window</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span>
+<span class="linenos">34</span>        <span class="c1">-- configure window&#39;s titlebar (don&#39;t delete window when closing, because we want to keep it in global)</span>
+<span class="linenos">35</span>        <span class="n">titlebar</span> <span class="o">=</span> <span class="p">{</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Counter&#39;</span><span class="p">,</span> <span class="n">delete_on_close</span> <span class="o">=</span> <span class="kc">false</span> <span class="p">},</span>
+<span class="linenos">36</span>
+<span class="linenos">37</span>        <span class="c1">-- add content to the window</span>
+<span class="linenos">38</span>        <span class="n">Frame</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span>
+<span class="linenos">39</span>            <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;content&#39;</span><span class="p">,</span>
+<span class="linenos">40</span>            <span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
+<span class="linenos">41</span>            <span class="n">style</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;inside_shallow_frame_with_padding&#39;</span> <span class="p">},</span>
+<span class="linenos">42</span>
+<span class="linenos">43</span>            <span class="n">Flow</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span>
+<span class="linenos">44</span>                <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;counter&#39;</span><span class="p">,</span>
+<span class="linenos">45</span>                <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;player_input_horizontal_flow&#39;</span><span class="p">,</span>
+<span class="linenos">46</span>
+<span class="linenos">47</span>                <span class="n">Label</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;counter_caption&#39;</span><span class="p">,</span> <span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;My Counter&#39;</span> <span class="p">},</span>
+<span class="linenos">48</span>                <span class="c1">-- add button for opening CaptionDialog (its event handler directly calls WindowManager:open)</span>
+<span class="linenos">49</span>                <span class="n">SpriteButton</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">style</span> <span class="o">=</span> <span class="s1">&#39;tool_button&#39;</span><span class="p">,</span> <span class="n">sprite</span> <span class="o">=</span> <span class="s1">&#39;utility/rename_icon_normal&#39;</span><span class="p">,</span>
+<span class="linenos">50</span>                                   <span class="n">on_gui_click</span> <span class="o">=</span> <span class="n">EventHandler</span><span class="p">:</span><span class="n">register</span><span class="p">(</span><span class="n">WindowManager</span><span class="p">,</span> <span class="s1">&#39;open&#39;</span><span class="p">,</span>
+<span class="linenos">51</span>                                   <span class="c1">-- WindowManager:open&#39;s arguments:</span>
+<span class="linenos">52</span>                                           <span class="n">WindowManager</span><span class="p">.</span><span class="n">Anchor</span><span class="p">.</span><span class="n">screen</span><span class="p">(</span><span class="n">player</span><span class="p">),</span> <span class="n">CaptionDialog</span><span class="p">)</span> <span class="p">},</span>
+<span class="linenos">53</span>                <span class="n">EmptyWidget</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">style</span> <span class="o">=</span> <span class="p">{</span> <span class="n">width</span> <span class="o">=</span> <span class="mi">12</span> <span class="p">}</span> <span class="p">},</span>
+<span class="linenos">54</span>                <span class="n">SpinnerLabel</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;counter_value&#39;</span><span class="p">,</span> <span class="n">initial_value</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">}</span>
+<span class="linenos">55</span>            <span class="p">}</span>
+<span class="linenos">56</span>        <span class="p">}</span>
+<span class="linenos">57</span>    <span class="p">}</span>
+<span class="linenos">58</span>
+<span class="linenos">59</span>    <span class="c1">-- create player&#39;s mod button for opening/closing the counter GUI</span>
+<span class="linenos">60</span>    <span class="kd">local</span> <span class="n">mod_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">:</span><span class="n">new</span> <span class="p">{</span>
+<span class="linenos">61</span>        <span class="n">caption</span> <span class="o">=</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span>
+<span class="linenos">62</span>        <span class="n">style</span> <span class="o">=</span> <span class="n">mod_gui</span><span class="p">.</span><span class="n">button_style</span><span class="p">,</span>
+<span class="linenos">63</span>        <span class="n">on_gui_click</span> <span class="o">=</span> <span class="n">EventHandler</span><span class="p">:</span><span class="n">register</span><span class="p">(</span><span class="kc">nil</span><span class="p">,</span> <span class="s1">&#39;toggle_counter_gui&#39;</span><span class="p">,</span> <span class="n">global</span><span class="p">.</span><span class="n">counter_guis</span><span class="p">[</span><span class="n">player</span><span class="p">.</span><span class="n">index</span><span class="p">])</span>
+<span class="linenos">64</span>    <span class="p">}</span>
+<span class="linenos">65</span>    <span class="n">mod_button</span><span class="p">:</span><span class="n">create</span><span class="p">(</span><span class="n">mod_gui</span><span class="p">.</span><span class="n">get_button_flow</span><span class="p">(</span><span class="n">player</span><span class="p">))</span>
+<span class="linenos">66</span><span class="kr">end</span>
+<span class="linenos">67</span>
+<span class="linenos">68</span><span class="c1">-- create global event handler for toggling counter GUI</span>
+<span class="linenos">69</span><span class="kr">function</span> <span class="nf">toggle_counter_gui</span><span class="p">(</span><span class="n">counter_window</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+<span class="linenos">70</span>    <span class="kd">local</span> <span class="n">player</span> <span class="o">=</span> <span class="n">game</span><span class="p">.</span><span class="n">get_player</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">player_index</span><span class="p">)</span>
+<span class="linenos">71</span>    <span class="c1">-- depending on counter GUIs state, either open or close it</span>
+<span class="linenos">72</span>    <span class="kr">if</span> <span class="n">counter_window</span><span class="p">:</span><span class="n">get_state</span><span class="p">()</span> <span class="o">==</span> <span class="n">Component</span><span class="p">.</span><span class="n">State</span><span class="p">.</span><span class="n">Created</span> <span class="kr">then</span>
+<span class="linenos">73</span>        <span class="c1">-- close counter GUI, but don&#39;t delete it</span>
+<span class="linenos">74</span>        <span class="n">WindowManager</span><span class="p">:</span><span class="n">close</span><span class="p">(</span><span class="n">counter_window</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
+<span class="linenos">75</span>    <span class="kr">else</span>
+<span class="linenos">76</span>        <span class="c1">-- open counter GUI</span>
+<span class="linenos">77</span>        <span class="n">WindowManager</span><span class="p">:</span><span class="n">open</span><span class="p">(</span><span class="n">WindowManager</span><span class="p">.</span><span class="n">Anchor</span><span class="p">.</span><span class="n">screen</span><span class="p">(</span><span class="n">player</span><span class="p">),</span> <span class="n">counter_window</span><span class="p">)</span>
+<span class="linenos">78</span>    <span class="kr">end</span>
+<span class="linenos">79</span><span class="kr">end</span>
+<span class="linenos">80</span>
+<span class="linenos">81</span><span class="c1">-- create counter GUI for all players when the mod is initialized</span>
+<span class="linenos">82</span><span class="n">script</span><span class="p">.</span><span class="n">on_init</span><span class="p">(</span><span class="kr">function</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<span class="linenos">83</span>    <span class="n">global</span><span class="p">.</span><span class="n">counter_guis</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="linenos">84</span>    <span class="kr">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">player</span> <span class="kr">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">game</span><span class="p">.</span><span class="n">players</span><span class="p">)</span> <span class="kr">do</span>
+<span class="linenos">85</span>        <span class="n">create_counter_gui</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
+<span class="linenos">86</span>    <span class="kr">end</span>
+<span class="linenos">87</span><span class="kr">end</span><span class="p">)</span>
+<span class="linenos">88</span><span class="c1">-- create counter GUI for newly joined players</span>
+<span class="linenos">89</span><span class="n">script</span><span class="p">.</span><span class="n">on_event</span><span class="p">(</span><span class="n">defines</span><span class="p">.</span><span class="n">events</span><span class="p">.</span><span class="n">on_player_created</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<span class="linenos">90</span>    <span class="kd">local</span> <span class="n">player</span> <span class="o">=</span> <span class="n">game</span><span class="p">.</span><span class="n">get_player</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">player_index</span><span class="p">)</span>
+<span class="linenos">91</span>    <span class="n">create_counter_gui</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
+<span class="linenos">92</span><span class="kr">end</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../class_mechanism.html" class="btn btn-neutral float-left" title="Class Mechanism" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, BiterUnion.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

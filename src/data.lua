@@ -1,0 +1,1 @@
+require('__poly__.GUI.WindowStyle')

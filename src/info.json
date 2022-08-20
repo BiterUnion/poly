@@ -1,0 +1,11 @@
+{
+  "name": "poly",
+  "version": "0.1.0",
+  "title": "Poly Modding Framework",
+  "author": "BiterUnion",
+  "factorio_version": "1.1",
+  "dependencies": [
+    "base >= 1.1"
+  ],
+  "description": "Poly is a mod framework for Factorio. It is intended to simplify various aspects of modding Factorio, e.g., creating and managing custom GUIs."
+}
