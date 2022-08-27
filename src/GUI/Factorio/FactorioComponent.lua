@@ -2,7 +2,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local EventHandler = require('__poly__.GUI.EventHandler')
 
-local FactorioComponent = Class:new('Poly.GUI.FactorioComponent', Component)
+local FactorioComponent = Class:new('FactorioComponent', Component)
 
 function FactorioComponent:new(args)
     local factorio_component = Component:new(args)
