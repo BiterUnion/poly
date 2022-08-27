@@ -4,7 +4,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local EmptyWidget = Class:new('EmptyWidget', FactorioComponent)
+local EmptyWidget = Class:new('Poly.GUI.EmptyWidget', FactorioComponent)
 
 function EmptyWidget:new(args)
     local empty_widget = FactorioComponent:new(args)

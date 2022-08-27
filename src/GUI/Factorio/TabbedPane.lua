@@ -4,7 +4,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local TabbedPane = Class:new('TabbedPane', FactorioComponent)
+local TabbedPane = Class:new('Poly.GUI.TabbedPane', FactorioComponent)
 
 function TabbedPane:new(args)
     local tabbed_pane = FactorioComponent:new(args)

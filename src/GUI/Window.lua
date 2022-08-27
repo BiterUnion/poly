@@ -9,7 +9,7 @@ local SpriteButton = require('__poly__.GUI.Factorio.SpriteButton')
 local EventHandler = require('__poly__.GUI.EventHandler')
 local WindowManager = require('__poly__.GUI.WindowManager')
 
-local Window = Class:new('Window', Frame)
+local Window = Class:new('Poly.GUI.Window', Frame)
 
 function Window:new(args)
     args.titlebar = args.titlebar or {}

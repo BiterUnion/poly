@@ -11,7 +11,7 @@ local EventHandler = require('__poly__.GUI.EventHandler')
 
 
 -- define a new custom component called "SpinnerTextfield", derived from Flow
-local SpinnerTextfield = Class:new('SpinnerTextfield', Flow)
+local SpinnerTextfield = Class:new('examples.SpinnerTextfield', Flow)
 
 -- override Flow's `new` to create a custom flow containing the SpinnerTextfield's buttons and textfield
 function SpinnerTextfield:new(args)

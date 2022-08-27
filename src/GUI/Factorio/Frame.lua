@@ -4,7 +4,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local Frame = Class:new('Frame', FactorioComponent)
+local Frame = Class:new('Poly.GUI.Frame', FactorioComponent)
 
 function Frame:new(args)
     local frame = FactorioComponent:new(args)

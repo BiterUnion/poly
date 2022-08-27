@@ -4,7 +4,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local Radiobutton = Class:new('Radiobutton', FactorioComponent)
+local Radiobutton = Class:new('Poly.GUI.Radiobutton', FactorioComponent)
 
 function Radiobutton:new(args)
     local radiobutton = FactorioComponent:new(args)

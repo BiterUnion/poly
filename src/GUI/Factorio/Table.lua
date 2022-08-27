@@ -4,7 +4,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local Table = Class:new('Table', FactorioComponent)
+local Table = Class:new('Poly.GUI.Table', FactorioComponent)
 
 function Table:new(args)
     local table = FactorioComponent:new(args)

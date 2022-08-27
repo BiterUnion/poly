@@ -4,7 +4,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local Progressbar = Class:new('Progressbar', FactorioComponent)
+local Progressbar = Class:new('Poly.GUI.Progressbar', FactorioComponent)
 
 function Progressbar:new(args)
     local progressbar = FactorioComponent:new(args)

@@ -16,7 +16,7 @@ function WrappedList.sum(list)
     return List.sum(list)
 end
 
-PolyList = Class:new('PolyList')
+PolyList = Class:new('profiling.PolyList')
 
 function PolyList:new(data)
     return { data = data }
@@ -30,7 +30,7 @@ function PolyList:sum()
     return result
 end
 
-DerivedPolyList = Class:new('DerivedPolyList', PolyList)
+DerivedPolyList = Class:new('profiling.DerivedPolyList', PolyList)
 
 local profile = {}
 
@@ -85,7 +85,7 @@ commands.add_command('poly_profile_class_mechanism', '', function(command)
     elseif command.parameter == 'derived' then
         list = DerivedPolyList:new(data)
     else
-        list = { _poly = { class_name = 'List' }, data = data }
+        list = { _poly = { class_id = 'List' }, data = data }
         setmetatable(list, { __index = List })
     end
     local num_runs = 20

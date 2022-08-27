@@ -11,7 +11,7 @@ local EventHandler = require('__poly__.GUI.EventHandler')
 
 
 -- define a new custom component called "SpinnerLabel", derived from Flow
-local SpinnerLabel = Class:new('SpinnerLabel', Flow)
+local SpinnerLabel = Class:new('examples.SpinnerLabel', Flow)
 
 -- override Flow's `new` to create a custom flow containing the SpinnerLabel's buttons and label
 function SpinnerLabel:new(args)

@@ -4,7 +4,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local Textfield = Class:new('Textfield', FactorioComponent)
+local Textfield = Class:new('Poly.GUI.Textfield', FactorioComponent)
 
 function Textfield:new(args)
     local textfield = FactorioComponent:new(args)

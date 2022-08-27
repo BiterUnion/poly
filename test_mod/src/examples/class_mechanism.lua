@@ -2,7 +2,7 @@
 local Class = require('__poly__.Class')
 
 -- == Define a new class called ExampleClass ======================================
-local ExampleClass = Class:new('ExampleClass')
+local ExampleClass = Class:new('examples.ExampleClass')
 
 -- define ExampleClass's "new" function (a.k.a. its constructor)
 function ExampleClass:new(param1, param2)
@@ -25,7 +25,7 @@ my_example_object:set_attr1(5)
 
 
 -- == Define a new class that is derived from ExampleClass ========================
-local DerivedClass = Class:new('DerivedClass', ExampleClass)
+local DerivedClass = Class:new('examples.DerivedClass', ExampleClass)
 
 -- override "new" of ExampleClass
 function DerivedClass:new()

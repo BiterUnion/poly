@@ -4,7 +4,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local ChooseElemButton = Class:new('ChooseElemButton', FactorioComponent)
+local ChooseElemButton = Class:new('Poly.GUI.ChooseElemButton', FactorioComponent)
 
 function ChooseElemButton:new(args)
     local choose_elem_button = FactorioComponent:new(args)

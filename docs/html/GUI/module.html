@@ -18,6 +18,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Module: global" href="../global/module.html" />
     <link rel="prev" title="Class Mechanism" href="../class_mechanism.html" /> 
 </head>
 
@@ -52,6 +53,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#full-example">Full Example</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../global/module.html">Module: global</a></li>
 </ul>
 
         </div>
@@ -88,7 +90,7 @@
 </ol>
 <p>Although each part of Poly’s GUI API can be used in isolation, it is a good idea to let Poly handle all GUI related features in your mod. Feel free to contact me in case you have a scenario that Poly cannot handle fully and naturally.</p>
 <p>See <a class="reference internal" href="#full-example"><span class="std std-ref">Full Example</span></a> for an example GUI using all three features.</p>
-<p><strong>Note:</strong> Because Poly stores, e.g., class names as part of event handlers in Factorio’s <code class="docutils literal notranslate"><span class="pre">global</span></code> table, it is necessary to update these values when the mod is updated. The simplest way to do this is to (by default) delete all Poly GUIs when your mod is updated.</p>
+<p><strong>Note:</strong> Because Poly stores, e.g., class ids as part of event handlers in Factorio’s <code class="docutils literal notranslate"><span class="pre">global</span></code> table, it is necessary to update these values when the mod is updated. The simplest way to do this is to (by default) delete all Poly GUIs when your mod is updated.</p>
 <section id="event-handling">
 <span id="id1"></span><h2>Event Handling<a class="headerlink" href="#event-handling" title="Permalink to this headline"></a></h2>
 <p>Poly’s event handler for GUI events is an easy way to register function calls (and optionally their arguments) with an id string. This enables Poly to associate GUI events on <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code> with handler functions, as a <code class="docutils literal notranslate"><span class="pre">LuaGuiElement</span></code> can only store primitive type values in its tags.</p>
@@ -143,7 +145,7 @@
 <span class="linenos">10</span><span class="kr">end</span>
 <span class="linenos">11</span>
 <span class="linenos">12</span><span class="c1">-- define event handler class</span>
-<span class="linenos">13</span><span class="kd">local</span> <span class="n">MyHandlerClass</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;MyHandlerClass&#39;</span><span class="p">)</span>
+<span class="linenos">13</span><span class="kd">local</span> <span class="n">MyHandlerClass</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;examples.MyHandlerClass&#39;</span><span class="p">)</span>
 <span class="linenos">14</span><span class="kr">function</span> <span class="nc">MyHandlerClass</span><span class="p">:</span><span class="nf">new</span><span class="p">()</span>
 <span class="linenos">15</span>    <span class="kr">return</span> <span class="p">{}</span>
 <span class="linenos">16</span><span class="kr">end</span>
@@ -288,7 +290,7 @@
 <span class="linenos">11</span>
 <span class="linenos">12</span>
 <span class="linenos">13</span><span class="c1">-- define a new custom component called &quot;SpinnerTextfield&quot;, derived from Flow</span>
-<span class="linenos">14</span><span class="kd">local</span> <span class="n">SpinnerTextfield</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;SpinnerTextfield&#39;</span><span class="p">,</span> <span class="n">Flow</span><span class="p">)</span>
+<span class="linenos">14</span><span class="kd">local</span> <span class="n">SpinnerTextfield</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;examples.SpinnerTextfield&#39;</span><span class="p">,</span> <span class="n">Flow</span><span class="p">)</span>
 <span class="linenos">15</span>
 <span class="linenos">16</span><span class="c1">-- override Flow&#39;s `new` to create a custom flow containing the SpinnerTextfield&#39;s buttons and textfield</span>
 <span class="linenos">17</span><span class="kr">function</span> <span class="nc">SpinnerTextfield</span><span class="p">:</span><span class="nf">new</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -411,7 +413,7 @@ If <code class="docutils literal notranslate"><span class="pre">window_or_anchor
 <span class="linenos">11</span>
 <span class="linenos">12</span>
 <span class="linenos">13</span><span class="c1">-- define a new custom component called &quot;SpinnerLabel&quot;, derived from Flow</span>
-<span class="linenos">14</span><span class="kd">local</span> <span class="n">SpinnerLabel</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;SpinnerLabel&#39;</span><span class="p">,</span> <span class="n">Flow</span><span class="p">)</span>
+<span class="linenos">14</span><span class="kd">local</span> <span class="n">SpinnerLabel</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;examples.SpinnerLabel&#39;</span><span class="p">,</span> <span class="n">Flow</span><span class="p">)</span>
 <span class="linenos">15</span>
 <span class="linenos">16</span><span class="c1">-- override Flow&#39;s `new` to create a custom flow containing the SpinnerLabel&#39;s buttons and label</span>
 <span class="linenos">17</span><span class="kr">function</span> <span class="nc">SpinnerLabel</span><span class="p">:</span><span class="nf">new</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
@@ -476,7 +478,7 @@ If <code class="docutils literal notranslate"><span class="pre">window_or_anchor
 <span class="linenos">18</span>
 <span class="linenos">19</span>
 <span class="linenos">20</span><span class="c1">-- define a new custom component called &quot;CaptionDialog&quot;, derived from Window</span>
-<span class="linenos">21</span><span class="kd">local</span> <span class="n">CaptionDialog</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;CaptionDialog&#39;</span><span class="p">,</span> <span class="n">Window</span><span class="p">)</span>
+<span class="linenos">21</span><span class="kd">local</span> <span class="n">CaptionDialog</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;examples.CaptionDialog&#39;</span><span class="p">,</span> <span class="n">Window</span><span class="p">)</span>
 <span class="linenos">22</span>
 <span class="linenos">23</span><span class="c1">-- override Window&#39;s `new` to create a custom window</span>
 <span class="linenos">24</span><span class="kr">function</span> <span class="nc">CaptionDialog</span><span class="p">:</span><span class="nf">new</span><span class="p">()</span>
@@ -639,6 +641,7 @@ If <code class="docutils literal notranslate"><span class="pre">window_or_anchor
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../class_mechanism.html" class="btn btn-neutral float-left" title="Class Mechanism" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../global/module.html" class="btn btn-neutral float-right" title="Module: global" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

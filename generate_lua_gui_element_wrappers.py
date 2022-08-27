@@ -65,7 +65,7 @@ local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')'''
 
     def declaration():
-        return f'''local {camel_case_subclass} = Class:new('{camel_case_subclass}', FactorioComponent)'''
+        return f'''local {camel_case_subclass} = Class:new('Poly.GUI.{camel_case_subclass}', FactorioComponent)'''
 
     def definition_new():
         new = f'''function {camel_case_subclass}:new(args)

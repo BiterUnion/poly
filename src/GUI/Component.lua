@@ -2,7 +2,7 @@ require('__poly__.GUI.init_control')
 
 local Class = require('__poly__.Class')
 
-local Component = Class:new('Component')
+local Component = Class:new('Poly.GUI.Component')
 
 Component.State = { Instantiated = 0, Created = 1 }
 

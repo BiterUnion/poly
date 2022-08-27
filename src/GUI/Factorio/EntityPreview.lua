@@ -4,7 +4,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local EntityPreview = Class:new('EntityPreview', FactorioComponent)
+local EntityPreview = Class:new('Poly.GUI.EntityPreview', FactorioComponent)
 
 function EntityPreview:new(args)
     local entity_preview = FactorioComponent:new(args)

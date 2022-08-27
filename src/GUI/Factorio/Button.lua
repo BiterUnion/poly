@@ -4,7 +4,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local Button = Class:new('Button', FactorioComponent)
+local Button = Class:new('Poly.GUI.Button', FactorioComponent)
 
 function Button:new(args)
     local button = FactorioComponent:new(args)

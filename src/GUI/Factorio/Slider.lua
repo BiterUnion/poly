@@ -4,7 +4,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local Slider = Class:new('Slider', FactorioComponent)
+local Slider = Class:new('Poly.GUI.Slider', FactorioComponent)
 
 function Slider:new(args)
     local slider = FactorioComponent:new(args)

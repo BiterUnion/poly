@@ -6,12 +6,12 @@ if global.poly.event_handler == nil then
     global.poly.event_handler = {}
 end
 
-local EventHandler = Class:new('EventHandler')
+local EventHandler = Class:new('Poly.GUI.EventHandler')
 
 function EventHandler:register(handler_table, function_name, ...)
     local handler_type
     if handler_table ~= nil and Class:is_registered_class(handler_table) then
-        handler_table = handler_table._Poly.class_name
+        handler_table = handler_table._Poly.class_id
     end
     local event_handler = {
         id = Poly.uuid(),

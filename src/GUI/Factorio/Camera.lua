@@ -4,7 +4,7 @@ local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local Camera = Class:new('Camera', FactorioComponent)
+local Camera = Class:new('Poly.GUI.Camera', FactorioComponent)
 
 function Camera:new(args)
     local camera = FactorioComponent:new(args)
