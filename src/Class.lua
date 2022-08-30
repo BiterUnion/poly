@@ -1,5 +1,7 @@
 require('__poly__.init_control')
 
+local Helper = require('__poly__.Helper')
+
 local Class = {
     registered_classes = {}
 }
@@ -36,7 +38,7 @@ function Class:new(class_id, base_class)
     -- create class table
     local ClassTable
     if base_class ~= nil then
-        ClassTable = Poly.deep_copy(base_class)
+        ClassTable = Helper.deep_copy(base_class)
         ClassTable._Poly.class_id = class_id
     else
         ClassTable = {
@@ -71,6 +73,10 @@ end
 function Class:get(class_id)
     assert(Class:is_registered_class_id(class_id), 'no such class: ' .. class_id)
     return Class.registered_classes[class_id]
+end
+
+function Class:instance_of(object, class)
+    return object and class and object._Poly and object._Poly.class_id == class.class_id
 end
 
 return Class

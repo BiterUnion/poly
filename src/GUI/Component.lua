@@ -1,6 +1,7 @@
 require('__poly__.GUI.init_control')
 
 local Class = require('__poly__.Class')
+local Helper = require('__poly__.Helper')
 
 local Component = Class:new('Poly.GUI.Component')
 
@@ -89,7 +90,7 @@ function Component:get_child(index_or_name)
 end
 
 function Component:get_children()
-    return Poly.read_only(self.children)
+    return Helper.read_only(self.children)
 end
 
 function Component:remove_child(index_or_name)

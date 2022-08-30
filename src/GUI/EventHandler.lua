@@ -1,6 +1,7 @@
 require('__poly__.GUI.init_control')
 
 local Class = require('__poly__.Class')
+local Helper = require('__poly__.Helper')
 
 if global.poly.event_handler == nil then
     global.poly.event_handler = {}
@@ -14,7 +15,7 @@ function EventHandler:register(handler_table, function_name, ...)
         handler_table = handler_table._Poly.class_id
     end
     local event_handler = {
-        id = Poly.uuid(),
+        id = Helper.uuid(),
         handler_type = handler_type,
         handler_table = handler_table,
         function_name = function_name,
