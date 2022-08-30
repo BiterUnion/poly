@@ -1,4 +1,5 @@
 local Class = require('__poly__.Class')
+local Helper = require('__poly__.Helper')
 local Component = require('__poly__.GUI.Component')
 local EventHandler = require('__poly__.GUI.EventHandler')
 
@@ -60,7 +61,7 @@ end
 function FactorioComponent:create(parent)
     self.lua_gui_element = parent.add(self.lua_gui_element_parameters)
     if self.style ~= nil then
-        Poly.GUI.apply_style(self.lua_gui_element, self.style)
+        Helper.apply_style(self.lua_gui_element, self.style)
     end
     for k, v in pairs(self.lua_gui_element_delayed_parameters) do
         self.lua_gui_element[k] = v
@@ -84,7 +85,7 @@ end
 
 function FactorioComponent:set_style(style)
     if self:get_state() == Component.State.Created then
-        Poly.GUI.apply_style(self.lua_gui_element, style)
+        Helper.apply_style(self.lua_gui_element, style)
     end
     if type(style) == 'string' then
         self.style = style
@@ -108,9 +109,9 @@ end
 
 function FactorioComponent:get_tags()
     if self:get_state() == Component.State.Created then
-        return Poly.deep_copy(self.lua_gui_element.tags)
+        return Helper.deep_copy(self.lua_gui_element.tags)
     else
-        return Poly.deep_copy(self.lua_gui_element_parameters.tags)
+        return Helper.deep_copy(self.lua_gui_element_parameters.tags)
     end
 end
 function FactorioComponent:set_tags(tags)

@@ -41,6 +41,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Class Mechanism</a></li>
 <li class="toctree-l1"><a class="reference internal" href="GUI/module.html">Module: GUI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="global/module.html">Module: global</a></li>
 </ul>
 
         </div>
@@ -74,7 +75,7 @@
 <span class="linenos"> 2</span><span class="kd">local</span> <span class="n">Class</span> <span class="o">=</span> <span class="nb">require</span><span class="p">(</span><span class="s1">&#39;__poly__.Class&#39;</span><span class="p">)</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span><span class="c1">-- == Define a new class called ExampleClass ======================================</span>
-<span class="linenos"> 5</span><span class="kd">local</span> <span class="n">ExampleClass</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;ExampleClass&#39;</span><span class="p">)</span>
+<span class="linenos"> 5</span><span class="kd">local</span> <span class="n">ExampleClass</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;examples.ExampleClass&#39;</span><span class="p">)</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="c1">-- define ExampleClass&#39;s &quot;new&quot; function (a.k.a. its constructor)</span>
 <span class="linenos"> 8</span><span class="kr">function</span> <span class="nc">ExampleClass</span><span class="p">:</span><span class="nf">new</span><span class="p">(</span><span class="n">param1</span><span class="p">,</span> <span class="n">param2</span><span class="p">)</span>
@@ -97,7 +98,7 @@
 <span class="linenos">25</span>
 <span class="linenos">26</span>
 <span class="linenos">27</span><span class="c1">-- == Define a new class that is derived from ExampleClass ========================</span>
-<span class="linenos">28</span><span class="kd">local</span> <span class="n">DerivedClass</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;DerivedClass&#39;</span><span class="p">,</span> <span class="n">ExampleClass</span><span class="p">)</span>
+<span class="linenos">28</span><span class="kd">local</span> <span class="n">DerivedClass</span> <span class="o">=</span> <span class="n">Class</span><span class="p">:</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;examples.DerivedClass&#39;</span><span class="p">,</span> <span class="n">ExampleClass</span><span class="p">)</span>
 <span class="linenos">29</span>
 <span class="linenos">30</span><span class="c1">-- override &quot;new&quot; of ExampleClass</span>
 <span class="linenos">31</span><span class="kr">function</span> <span class="nc">DerivedClass</span><span class="p">:</span><span class="nf">new</span><span class="p">()</span>
@@ -113,8 +114,9 @@
 </div>
 <p>Some additional notes on the Class API:</p>
 <ul class="simple">
-<li><p>The class method <code class="docutils literal notranslate"><span class="pre">new</span></code> is a special member function. It is the classes constructor and, if defined, has to return a new instance of the class. It can optionally take arguments. You do <em>not</em> have to set instance’s metatable yourself, Poly takes care of that for you.</p></li>
+<li><p>The class method <code class="docutils literal notranslate"><span class="pre">new</span></code> is a special member function. It is the class’ constructor and, if defined, has to return a new instance of the class. It can optionally take arguments. You do <em>not</em> have to set instance’s metatable yourself, Poly takes care of that for you.</p></li>
 <li><p>To make the class mechanism work, all calls to member and static member functions of a class have to use the colon notation, e.g., <code class="docutils literal notranslate"><span class="pre">ExampleClass:new(1,</span> <span class="pre">'foo')</span></code> and <code class="docutils literal notranslate"><span class="pre">my_example_object:set_attr1(5)</span></code>. Definitions of class methods have to use the colon notation as well, e.g., <code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">ExampleClass:set_attr1(attr1)</span> <span class="pre">...</span></code>.</p></li>
+<li><p>The first parameter to <code class="docutils literal notranslate"><span class="pre">Class:new</span></code> is the class’ identifier. It can be any unique string, but usually should be the class’ name prefixed with the class’ path, e.g., <code class="docutils literal notranslate"><span class="pre">examples.ExampleClass</span></code> in this example, because example class is defined in a file in the <code class="docutils literal notranslate"><span class="pre">examples</span></code> folder. Adding the class’ path as prefix allows to have multiple classes with the same name.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">Class:new</span></code> function takes an optional second argument <code class="docutils literal notranslate"><span class="pre">base_class</span></code>. This allows for class inheritance, when passing another previously defined class. The derived class provides all functions of the base class. Defining functions in the derived class overrides the corresponding function in the base class. Note that when overriding the <code class="docutils literal notranslate"><span class="pre">new</span></code> function, you are responsible for correctly initializing the base class object, e.g., by calling the base class constructor.</p></li>
 <li><p>Poly may persist class instances in Factorio’s <code class="docutils literal notranslate"><span class="pre">global</span></code> table, e.g. for event handling, so it is generally a good idea to only store compatible types in class instances, e.g. numbers, strings, LuaGuiElements, and <em>not</em> functions, for example.</p></li>
 </ul>

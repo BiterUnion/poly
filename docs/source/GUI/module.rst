@@ -13,7 +13,7 @@ Although each part of |Framework's| GUI API can be used in isolation, it is a go
 
 See :ref:`full_example` for an example GUI using all three features.
 
-**Note:** Because |Framework| stores, e.g., class names as part of event handlers in Factorio's ``global`` table, it is necessary to update these values when the mod is updated. The simplest way to do this is to (by default) delete all |Framework| GUIs when your mod is updated.
+**Note:** Because |Framework| stores, e.g., class ids as part of event handlers in Factorio's ``global`` table, it is necessary to update these values when the mod is updated. The simplest way to do this is to (by default) delete all |Framework| GUIs when your mod is updated.
 
 .. _event_handling:
 

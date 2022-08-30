@@ -18,7 +18,7 @@ local EventHandler = require('__poly__.GUI.EventHandler')
 
 
 -- define a new custom component called "CaptionDialog", derived from Window
-local CaptionDialog = Class:new('CaptionDialog', Window)
+local CaptionDialog = Class:new('examples.CaptionDialog', Window)
 
 -- override Window's `new` to create a custom window
 function CaptionDialog:new()

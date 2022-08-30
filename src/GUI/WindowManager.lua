@@ -9,7 +9,7 @@ if global.poly.window_manager == nil then
     }
 end
 
-local WindowManager = Class:new('WindowManager')
+local WindowManager = Class:new('Poly.GUI.WindowManager')
 
 WindowManager.Anchor = {
     top = function(player)

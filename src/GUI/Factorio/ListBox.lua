@@ -1,10 +1,10 @@
--- Poly: generated for Factorio 1.1.67 runtime API 3
+-- Poly: generated for Factorio 1.1.68 runtime API 3
 
 local Class = require('__poly__.Class')
 local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')
 
-local ListBox = Class:new('ListBox', FactorioComponent)
+local ListBox = Class:new('Poly.GUI.ListBox', FactorioComponent)
 
 function ListBox:new(args)
     local list_box = FactorioComponent:new(args)

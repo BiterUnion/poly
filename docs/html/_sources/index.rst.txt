@@ -14,3 +14,4 @@ It provides modules that simplify various aspects of modding Factorio, e.g., cre
 
    class_mechanism
    GUI/module
+   global/module

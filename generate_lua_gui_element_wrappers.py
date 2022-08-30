@@ -22,9 +22,9 @@ def definition_getter(camel_case_subclass, attribute, delayed, read_only=False):
     attribute_name = attribute['name']
     return f'''function {camel_case_subclass}:get_{attribute_name}()
     if self:get_state() == Component.State.Created then
-        return {'Poly.read_only(' if read_only else ''}self.lua_gui_element.{attribute_name}{')' if read_only else ''}
+        return {'Helper.read_only(' if read_only else ''}self.lua_gui_element.{attribute_name}{')' if read_only else ''}
     else
-        return {'Poly.read_only(' if read_only else ''}self.{'lua_gui_element_delayed_parameters' if delayed else 'lua_gui_element_parameters'}.{attribute_name}{')' if read_only else ''}
+        return {'Helper.read_only(' if read_only else ''}self.{'lua_gui_element_delayed_parameters' if delayed else 'lua_gui_element_parameters'}.{attribute_name}{')' if read_only else ''}
     end
 end'''
 
@@ -65,7 +65,7 @@ local Component = require('__poly__.GUI.Component')
 local FactorioComponent = require('__poly__.GUI.Factorio.FactorioComponent')'''
 
     def declaration():
-        return f'''local {camel_case_subclass} = Class:new('{camel_case_subclass}', FactorioComponent)'''
+        return f'''local {camel_case_subclass} = Class:new('Poly.GUI.{camel_case_subclass}', FactorioComponent)'''
 
     def definition_new():
         new = f'''function {camel_case_subclass}:new(args)
@@ -321,6 +321,7 @@ for method in lua_gui_element_class['methods']:
 # create FactorioComponent
 with open(WRAPPER_PATH / 'FactorioComponent.lua', 'w') as wrapper_file:
     wrapper_file.write(f'''local Class = require('__poly__.Class')
+local Helper = require('__poly__.Helper')
 local Component = require('__poly__.GUI.Component')
 local EventHandler = require('__poly__.GUI.EventHandler')
 
@@ -375,7 +376,7 @@ end
 function FactorioComponent:create(parent)
     self.lua_gui_element = parent.add(self.lua_gui_element_parameters)
     if self.style ~= nil then
-        Poly.GUI.apply_style(self.lua_gui_element, self.style)
+        Helper.apply_style(self.lua_gui_element, self.style)
     end
     for k, v in pairs(self.lua_gui_element_delayed_parameters) do
         self.lua_gui_element[k] = v
@@ -399,7 +400,7 @@ end
 
 function FactorioComponent:set_style(style)
     if self:get_state() == Component.State.Created then
-        Poly.GUI.apply_style(self.lua_gui_element, style)
+        Helper.apply_style(self.lua_gui_element, style)
     end
     if type(style) == 'string' then
         self.style = style
@@ -423,9 +424,9 @@ end
 
 function FactorioComponent:get_tags()
     if self:get_state() == Component.State.Created then
-        return Poly.deep_copy(self.lua_gui_element.tags)
+        return Helper.deep_copy(self.lua_gui_element.tags)
     else
-        return Poly.deep_copy(self.lua_gui_element_parameters.tags)
+        return Helper.deep_copy(self.lua_gui_element_parameters.tags)
     end
 end
 function FactorioComponent:set_tags(tags)

@@ -11,7 +11,7 @@ function handle_button_click(value, event)
 end
 
 -- define event handler class
-local MyHandlerClass = Class:new('MyHandlerClass')
+local MyHandlerClass = Class:new('examples.MyHandlerClass')
 function MyHandlerClass:new()
     return {}
 end
